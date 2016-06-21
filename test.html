@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.js"></script>
+    <title>test</title>
+
+    <script type="text/javascript">
+      $(function(){
+        $("#btn").click(function(){
+        $(this).toggleClass('active');
+          if ($(this).hasClass("active")){
+            $("#cat").fadeToggle("slow").promise().done(function(){
+                $("#wow").fadeToggle("slow")
+            });
+          }else{
+            $("#wow").fadeToggle("slow").promise().done(function(){
+              $("#cat").fadeToggle("slow")
+            })
+          };
+        });
+      });
+
+      $(document).ready(function() {
+        $(".js-example-basic-single").select2();
+      });
+    </script>
+  </head>
+  <body>
+    <center>
+      <div>
+        <br/>
+        <!--<input type="button" id="btn" value="fadein_out"/>-->
+      </div>
+    </center>
+    <br/>
+    <div align="center">
+      <!--<img id="cat" src="C:/Users/Tester/Desktop/bootstrap/cat.jpg" height="100px" width="100px">-->
+      <!--<img id="wow" src="C:/Users/Tester/Desktop/bootstrap/Wow.jpg"height="100px" width="100px" style="display: none;">-->
+    </div>
+    <h3> autocomplete & datalist TEST</h3>
+    <center>
+      <select class="js-example-basic-single">
+        <option value="HTTR">HTTR</option>
+        <option value="JMTR">JMTR</option>
+        <option value="JRR-1">JRR-1</option>
+        <option value="JRR-2">JRR-2</option>
+        <option value="JRR-3">JRR-3</option>
+        <option value="JRR-4">JRR-4</option>
+        <option value="FCA">FCA</option>
+        <option value="TCA">TCA</option>
+        <option value="SHE">SHE</option>
+        <option value="JPDR">JPDR</option>
+      </select>
+
+    </center>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+  </body>
+</html>

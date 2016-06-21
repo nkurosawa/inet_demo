@@ -1,0 +1,600 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>情報登録・検索システム&nbsp;-&nbsp;ユーザー管理</title>
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <link rel="stylesheet" href="base-design.css" type="text/css">
+    <link rel="stylesheet" href="tab-design.css" type="text/css">
+    <link rel="stylesheet" href="btn-design.css" type="text/css">
+    <script type="text/javascript">
+      // $(function(){
+      //   $("#ach,#rach").on('change',function(){
+      //     $("input[name=ch]").prop("checked",this.checked)
+      //   });
+      //   $(".search").click(function(){
+      //     $("#unrelation").fadeToggle("slow")
+      //   });
+      //   $(".research").click(function(){
+      //     $("#relation").fadeToggle("slow")
+      //   });
+      //   $(".unlock").click(function(){
+      //     $(".none").fadeToggle("slow")
+      //   });
+      // });
+    </script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        //select2化
+        var op = $('.single').children();
+        var arrsz = [];
+        var sz;
+        for( var i=0; i<op.length; i++ ){
+          arrsz.push(op.eq(i).text().length);
+        }
+        sz = (Math.max.apply(null, arrsz) + 13 + "em");
+        $('.single').select2({
+          tags:true,
+          placeholder: "関連施設を選択",
+          allowClear: true,
+          width: sz,
+          language: "es"
+        });
+      });
+    </script>
+    <style type="text/css">
+    .maintable th{
+      vertical-align: top;
+      width: 120px;
+      padding: 8px;
+    }
+    .maintable td {
+      vertical-align: top;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      padding-left: 8px;
+    }
+    .maintable td textarea{
+      width: 38em;
+      font-size: small;
+    }
+    .maintable td p{
+      padding: 0px;
+      margin:0px;
+      font-family: "ＭＳ ゴシック", "Osaka－等幅";
+    }
+    .search-button {
+      margin-top: 8px;
+    }
+    .style2 {
+      font-size: medium;
+      color: #FF0000;
+    }
+    .variableTable {
+      border:thin solid #0099FF;
+      border-collapse:collapse;
+      margin-top: 0.5em;
+    }
+    .variableTable td{
+      border:1px solid #000000;
+      padding: 0.5em;
+      text-align:center;
+      vertical-align: middle;
+    }
+    .variableTable .text-box{
+      width: 360px;
+    }
+    .variableTable .select-file{
+      width: 365px;
+    }
+    .variableTableValRow select{
+      width: 22em;
+    }
+    .uploadTable {
+      border:thin solid #0099FF;
+      border-collapse:collapse;
+      margin-top: 0.5em;
+    }
+    .uploadTable td{
+      padding: 0.5em;
+    }
+    .uploadTable .col0{
+      text-align:right;
+      vertical-align: middle;
+    }
+    .uploadTable .text-box{
+      width: 360px;
+    }
+    .uploadTable .select-file{
+      width: 420px;
+    }
+    </style>
+  </head>
+  <body>
+    <noscript>&lt;p&gt; JavaScriptが&lt;font color="#FF3333"&gt;無効&lt;/font&gt;になっています。&lt;br /&gt; 登録文書編集、新規文書登録、検索などを行う際はJavaScriptを有効にしてください。 &lt;/p&gt; </noscript>
+    <div class="container-fluid">
+      <div class="row">
+        <table class="layout" border="0">
+          <tbody>
+            <tr>
+              <td class="ltd"></td>
+              <td class="h1td">
+                <h1 align="center">情報登録・検索システム</h1>
+              </td>
+              <td class="rtd"></td>
+            </tr>
+            <tr>
+              <td class="ltd"></td>
+              <td align="right">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td align="right">
+                        <a href="show_user.cgi?id=1">admin</a>さんがログインしています。
+                        <a href="logout.cgi">ログアウト</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right">
+                        <a href="editfiles.cgi">データ管理</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+              <td class="rtd"></td>
+            </tr>
+            <tr>
+              <td class="ltd"></td>
+              <td>
+                <div id="tabs">
+                  <ul>
+                    <li>
+                      <a href="#" class="ltab">ユーザー管理</a>
+                    </li>
+                    <li>
+                      <a href="#" class="tab">ファイル保存設定</a>
+                    </li>
+                    <li>
+                      <a href="#" class="tab">バックアップ</a>
+                    </li>
+                    <li>
+                      <a href="#" class="active tab">関連施設登録</a>
+                    </li>
+                    <li>
+                      <a href="#" class="tab">施設マスターテーブルの管理</a>
+                    </li>
+                  </ul>
+                </div>
+                <div id="content">
+                  <h3>関連施設の登録</h3>
+                  <center>
+                    <fieldset>
+                        施設名の選択：
+                        <select class="single" >
+                          <option value="HTTR(高温工学試験研究炉)">HTTR,高温工学試験研究炉</option>
+                          <option value="JMTR(材料試験炉)">JMTR,材料試験炉</option>
+                          <option value="JRR-1(原子炉施設)">JRR-1,原子炉施設</option>
+                          <option value="JRR-2(原子炉施設)">JRR-2,原子炉施設</option>
+                          <option value="JRR-3(原子炉施設)">JRR-3,原子炉施設</option>
+                          <option value="JRR-4(原子炉施設)">JRR-4,原子炉施設</option>
+                          <option value="FCA(高速臨界実験装置)">FCA,高速臨界実験装置</option>
+                          <option value="TCA(軽水臨界実験装置)">TCA,軽水臨界実験装置</option>
+                          <option value="SHE(半均質臨界実験装置)">SHE,半均質臨界実験装置</option>
+                          <option value="JPDR(試験研究用原子力発電所1)">JPDR,試験研究用原子力発電所1</option>
+                          <option value="むつ,原子力第1船,原子力第一船">むつ,原子力第1船,原子力第一船</option>
+                          <option value="高速実験炉,常陽,,重水臨界実験装置">常陽,高速実験炉,重水臨界実験装置</option>
+                          <option value="高速実験炉,常陽,,重水臨界実験装置">関連施設未定義</option>
+                        </select>
+                    </fieldset>
+                  </center>
+                  <hr style="border-color:#CDCDCD;">
+                  <ul class="nav nav-tabs">
+                    <li>
+                      <a data-toggle="tab" href="#home">登録済</a>
+                    </li>
+                    <li class="active">
+                      <a data-toggle="tab" href="#menu1">登録対象</a>
+                    </li>
+                    <li>
+                      <a data-toggle="tab" href="#menu2">登録対象外</a>
+                    </li>
+                  </ul>
+                  <div class="tab-content">
+                    <div id="home" class="tab-pane fade in">
+                      <div id="relation">
+                        <table class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th><input type="checkbox" id="rach" aria-label="check"></th>
+                              <th>登録ID</th>
+                              <th>施設</th>
+                              <th>申請件名</th>
+                              <th>タグ付け日</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr class="none" >
+                              <th scope="row"><input type="checkbox" name="ch" aria-label="check"></th>
+                              <td>2007-000001</td>
+                              <td>VHTR</td>
+                              <td>超高温原子炉にかかわる....</td>
+                              <td>2016年6月1日</td>
+                            </tr>
+                            <tr class="none" >
+                              <th scope="row"><input type="checkbox" name="ch"  aria-label="check"></th>
+                              <td>2008-000112</td>
+                              <td>VHTR</td>
+                              <td>超高温原子炉にかかわる....</td>
+                              <td>2016年6月1日</td>
+                            </tr>
+                            <tr class="none" >
+                              <th scope="row"><input type="checkbox" name="ch"  aria-label="check"></th>
+                              <td>2010-001003</td>
+                              <td>VHTR</td>
+                              <td>超高温原子炉にかかわる....</td>
+                              <td>2016年6月1日</td>
+                            </tr>
+                            <tr>
+                              <th scope="row"><input type="checkbox" name="ch"  aria-label="check"></th>
+                              <td>2006-000004</td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2016年6月1日</td>
+                            </tr>
+                            </tr>
+                            <tr>
+                              <th scope="row"><input type="checkbox" name="ch"  aria-label="check"></th>
+                              <td>2006-000005</td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2016年6月1日</td>
+                            </tr>
+                            <tr>
+                              <th scope="row"><input type="checkbox" name="ch"  aria-label="check"></th>
+                              <td>2006-000006</td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2016年6月1日</td>
+                            </tr>
+                            <tr>
+                              <th scope="row"><input type="checkbox" name="ch"  aria-label="check"></th>
+                              <td>2006-000007</td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2016年6月1日</td>
+                            </tr>
+                            <tr>
+                              <th scope="row"><input type="checkbox" name="ch"  aria-label="check"></th>
+                              <td>2006-000008</td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2016年6月1日</td>
+                            </tr>
+                            <tr>
+                              <th scope="row"><input type="checkbox" name="ch"  aria-label="check"></th>
+                              <td>2006-000009</td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2016年6月1日</td>
+                            </tr>
+                            <tr>
+                              <th scope="row"><input type="checkbox" name="ch"  aria-label="check"></th>
+                              <td>2006-000010</td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2016年6月1日</td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        <nav align="center">
+                          <ul class="pagination">
+                            <li class="page-item disabled">
+                              <a class="page-link" href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                              </a>
+                            </li>
+                            <li class="page-item active">
+                              <a class="page-link" href="#">1 <span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">4</a></li>
+                            <li class="page-item"><a class="page-link" href="#">5</a></li>
+                            <li class="page-item">
+                              <a class="page-link" href="#" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                              </a>
+                            </li>
+                          </ul>
+                        </nav>
+                        <center><button type="button" class="btn btn-warning unlock" style="width:50%; margin-bottom: 10px; margin-top:10px;">関連付けを解除する</button></center>
+                      </div>
+                    </div>
+                    <div id="menu1" class="tab-pane fade in active">
+                      <div>
+                        <input type="text" size="30" name="" placeholder="キーワードを入力してください">
+                        <label for="in"><input type="radio" name="name" id="in" value="含める" checked>or</label>
+                        <label for="out"><input type="radio" name="name" id="out" value="含めない">and</label>
+                        <button type="button" class="btn btn-default">検索</button>
+                      </div>
+											<div style="display: inline-block">
+												<fieldset>
+													表示行数：
+												<select >
+													<option value="10" selected="">10</option>
+													<option value="50">50</option>
+													<option value="100">100</option>
+													<option value="200">200</option>
+												</select >
+												<b><span>500件中10件表示</span></b>
+												</fieldset>
+												<center>
+												<fieldset>
+													並び替え：
+												<select >
+													<option value="50" selected="">登録ID</option>
+													<option value="100">関連施設</option>
+													<option value="200">施設名称</option>
+													<option value="250">状況</option>
+													<option value="250" selected="">申請日</option>
+												</select >
+												<label for="up"><input type="radio" value="up">昇順</label>
+												<label for="down"><input type="radio" value="down" checked="">降順</label>
+												<input type="button" class="btn btn-default" value="並替">
+												</center>
+											</fieldset>
+											</div>
+                      <div id="unrelation" >
+                        <table class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th><input type="checkbox" id="ach" aria-label="check"></th>
+                              <th>登録ID</th>
+                              <th>PDF</th>
+                              <th>関連施設</th>
+                              <th>施設名称</th>
+                              <th>申請件名</th>
+                              <th>申請日</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch" aria-label="check"></td>
+                              <td>2006-000001</td>
+                              <td><a href = "#">原子炉使用に関する手引き</a></td>
+                              <td>京都大学</td>
+                              <td>京都大学</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2015年5月1日</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch" aria-label="check"></td>
+                              <td>2006-000002</td>
+                              <td><a href="#">許認可について</a></td>
+                              <td>京都大学</td>
+                              <td>京都大学</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2015年4月20日</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch" aria-label="check"></td>
+                              <td>2006-000003</td>
+                              <td><a href="#">2006-000003.pdf</a></td>
+                              <td>京都大学</td>
+                              <td>京都大学</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2015年3月15日</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox"  name="ch" aria-label="check"></td>
+                              <td>2006-000004</td>
+                              <td><a href="#">許認可について</a><br><a href="#">材料試験炉の使用について</a><br><a href="#">28安（原規）第2135号</a></td>
+                              <td>JMTR</td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2015年2月1日</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch"  aria-label="check"></td>
+                              <td>2006-000005</td>
+                              <td>2006-000005.pdf</td>
+                              <td>JMTR</td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2014年12月1日</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch"  aria-label="check"></td>
+                              <td>2006-000006</td>
+                              <td>2006-000006.pdf</td>
+                              <td>JMTR</td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2014年11月10日</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch"  aria-label="check"></td>
+                              <td>2006-000007</td>
+                              <td>2006-000007.pdf</td>
+                              <td>JMTR</td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2014年11月9日</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch"  aria-label="check"></td>
+                              <td>2006-000008</td>
+                              <td>2006-000008.pdf</td>
+                              <td></td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2011年2月1日</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch"  aria-label="check"></td>
+                              <td>2006-000009</td>
+                              <td>2006-000009.pdf</td>
+                              <td></td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2010年9月1日</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch"  aria-label="check"></td>
+                              <td>2006-000010</td>
+                              <td>2006-000010.pdf</td>
+                              <td></td>
+                              <td>JMTR</td>
+                              <td>材料試験炉施設にかかわる....</td>
+                              <td>2010年9月1日</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <nav align="center">
+                          <ul class="pagination">
+                            <li class="page-item disabled">
+                              <a class="page-link" href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                              </a>
+                            </li>
+                            <li class="page-item active">
+                              <a class="page-link" href="#">1 <span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">4</a></li>
+                            <li class="page-item"><a class="page-link" href="#">5</a></li>
+                            <li class="page-item">
+                              <a class="page-link" href="#" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                              </a>
+                            </li>
+                          </ul>
+                        </nav>
+                        <center>
+                          <button type="button" data-toggle="modal" data-target="#sampleModal" class="btn btn-primary related" style=" margin-bottom: 10px; margin-top:10px;">関連施設の登録</button>
+                          <button type="button" class="btn btn-warning related" style=" margin-bottom: 10px; margin-top:10px;">登録対象外へ移動</button>
+                        </center>
+                      </div>
+                    </div>
+                    <div id="menu2" class="tab-pane fade in active">
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <!--中央セル-->
+              <td class="rtd"></td>
+              <!--右スペース-->
+            </tr>
+            <!--メイン行-->
+          </tbody>
+        </table>
+				<!-- モーダル・ダイアログ -->
+				<div class="modal fade" id="sampleModal" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+								<h4 class="modal-title">関連施設の登録</h4>
+							</div>
+							<div class="modal-body">
+                      <div id="unrelation" >
+                        <table class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th><input type="checkbox" id="ach" aria-label="check"></th>
+                              <th>登録ID</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch" aria-label="check"></td>
+                              <td>2006-000001</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch" aria-label="check"></td>
+                              <td>2006-000002</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch" aria-label="check"></td>
+                              <td>2006-000003</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox"  name="ch" aria-label="check"></td>
+                              <td>2006-000004</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch"  aria-label="check"></td>
+                              <td>2006-000005</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch"  aria-label="check"></td>
+                              <td>2006-000006</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch"  aria-label="check"></td>
+                              <td>2006-000007</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch"  aria-label="check"></td>
+                              <td>2006-000008</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch"  aria-label="check"></td>
+                              <td>2006-000009</td>
+                            </tr>
+                            <tr>
+                              <td scope="row"><input type="checkbox" name="ch"  aria-label="check"></td>
+                              <td>2006-000010</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+							</div>
+										<center>
+                    <fieldset>
+                        施設名の選択：
+                        <select class="single" >
+                          <option value="HTTR(高温工学試験研究炉)">HTTR,高温工学試験研究炉</option>
+                          <option value="JMTR(材料試験炉)">JMTR,材料試験炉</option>
+                          <option value="JRR-1(原子炉施設)">JRR-1,原子炉施設</option>
+                          <option value="JRR-2(原子炉施設)">JRR-2,原子炉施設</option>
+                          <option value="JRR-3(原子炉施設)">JRR-3,原子炉施設</option>
+                          <option value="JRR-4(原子炉施設)">JRR-4,原子炉施設</option>
+                          <option value="FCA(高速臨界実験装置)">FCA,高速臨界実験装置</option>
+                          <option value="TCA(軽水臨界実験装置)">TCA,軽水臨界実験装置</option>
+                          <option value="SHE(半均質臨界実験装置)">SHE,半均質臨界実験装置</option>
+                          <option value="JPDR(試験研究用原子力発電所1)">JPDR,試験研究用原子力発電所1</option>
+                          <option value="むつ,原子力第1船,原子力第一船">むつ,原子力第1船,原子力第一船</option>
+                          <option value="高速実験炉,常陽,,重水臨界実験装置">常陽,高速実験炉,重水臨界実験装置</option>
+                          <option value="高速実験炉,常陽,,重水臨界実験装置">関連施設未定義</option>
+                        </select>
+                    </fieldset>
+										</center>
+								<br>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-primary">OK</button>
+								<button type="button" class="btn btn-default" data-dismiss="modal"> Cancel</button>
+							</div>
+						</div>
+					</div>
+				</div>
+        <!--layout table-->
+      </div>
+    </div>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+  </body>
+</html>

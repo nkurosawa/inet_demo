@@ -1,0 +1,1132 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>情報登録・検索システム&nbsp;-&nbsp;ユーザー管理
+    </title>
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <!-- <link rel="stylesheet" href="select2.css" type="text/css"> -->
+    <!-- <script src="select2.js"></script> -->
+    <!-- Latest compiled and minified CSS -->
+    <!--<link rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+      integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ=="
+      crossorigin="anonymous">
+    <link rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"
+      integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX"
+      crossorigin="anonymous">-->
+    <link rel="stylesheet" href="base-design.css" type="text/css">
+    <link rel="stylesheet" href="tab-design.css" type="text/css">
+    <link rel="stylesheet" href="btn-design.css" type="text/css">
+    <style type="text/css">
+        .search-table {
+            border: 3px solid #999999;
+            border-collapse: collapse;
+            background-color: #999999;
+            margin: 5px;
+            width: 680px;
+            border-radius: 3px;
+        }
+        /*XXX*/
+        .select2-selection__choice{
+          font-size: 12px;
+          background-color: yellow;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          width: 25%;
+          text-align: left;
+        }
+        .select2{
+          margin: 1em;
+        }
+        /*XXX*/
+        label {
+            font-size: 14px;
+        }
+
+        .search-table td {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            text-align: center;
+        }
+
+        .search-table .bline {
+            padding-bottom: 0px;
+        }
+
+        .search-table .search-button {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            text-align: center;
+        }
+
+        .category-table {
+            border: 1px solid #FFFFFF;
+            width: 640px;
+            border-collapse: separate;
+        }
+
+        .category-table caption {
+            color: #000000;
+            background-color: #FFFFFF;
+            text-align: left;
+            font-weight: bold;
+            padding: 5px;
+        }
+
+        .category-table th {
+            color: #000000;
+            font-weight: bold;
+            border: 1px solid #FFFFFF;
+            background-color: #FFFFFF;
+            padding: 2px;
+            text-align: left;
+            width: 80px;
+        }
+
+        .category-table th label {
+            font-weight: bold;
+        }
+
+        .category-table td {
+            text-align: left;
+            padding: 0px;
+            margin: 2px;
+        }
+
+        #keywords td {
+            padding-top: 0px;
+            padding-bottom: 0px;
+            text-align: center;
+        }
+
+        .keyword {
+            width: 300px;
+        }
+
+        .keyword-table {
+            border: 1px solid #FFFFFF;
+            border-spacing: 0;
+            width: 100%;
+            border-radius: 0px 0px 3px 3px;
+        }
+
+        .keyword-table caption {
+            color: #000000;
+            background-color: #FFFFFF;
+            text-align: left;
+            font-weight: bold;
+            padding: 5px;
+        }
+
+        .keyword-table th {
+            color: #000000;
+            font-weight: bold;
+            /*border:1px solid #666666;*/
+            background-color: #666666;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 0px 0px 3px 3px;
+        }
+
+        .keyword-table td {
+            padding: 5px;
+            margin: 0px;
+        }
+
+        #fields,
+        #range {
+            display: block;
+        }
+
+        .style1 {
+            color: #FFFFFF;
+            font-weight: bold;
+            font-family: "&#65533;l&#65533;r &#65533;S&#65533;V&#65533;b&#65533;N", "Osaka&#65533;|&#65533;&#65533;&#65533;&#65533;"
+        }
+
+        .advanced {
+            display: none;
+        }
+
+        .trigger-former {
+            text-decoration: none;
+            padding: 10px 5px;
+            border-radius: 5px;
+            display: inline-block;
+            width: 360px;
+            border-style: none;
+            font-size: 18px;
+            /*&#65533;O&#65533;&#65533;&#65533;f&#65533;[&#65533;V&#65533;&#65533;&#65533;&#65533;*/
+            background-image: -moz-linear-gradient(bottom, #ffa035, #ffa035, 50%, #ff8300, #ff8300);
+            background-image: -webkit-gradient(linear, left top, left bottom, from(#ffa035), color-stop(0.49, #ffa035), color-stop(0.50, #ff8300), to(#ff8300));
+            background: -ms-linear-gradient(top, #ffa035, #ff8300);
+            /*&#65533;{&#65533;b&#65533;N&#65533;X&#65533;e*/
+            box-shadow: 2px 2px 3px 1px #666;
+            -moz-box-shadow: 2px 2px 3px 1px #666;
+            -webkit-box-shadow: 2px 2px 3px 1px #666;
+        }
+
+        .trigger-former:hover {
+            opacity: 0.8;
+        }
+        /* hacking default inputs */
+
+        input[type="button"],
+        input[type="submit"] {
+            border-radius: 5px;
+            outline: none;
+        }
+
+        #dl-btn {
+            position: relative;
+            top: 0.5em;
+            float: right;
+        }
+
+        .help-tooltip {
+            color: #66f;
+            cursor: pointer;
+        }
+
+        .sel-can {
+            position: relative;
+            left: 23.7em;
+        }
+
+        #search-ico {
+            position: absolute;
+        }
+    </style>
+    <style type="text/css">
+        <!-- .maintable th {
+            padding: 0.5em;
+        }
+
+        .maintable td {
+            padding: 0.5em;
+        }
+
+        .maintable .th0 {
+            background-color: #0000FF;
+            border: 1px solid #0000FF;
+            text-align: center;
+            color: #FFFFFF;
+            padding: 0.5em;
+        }
+
+        .maintable .th1 {
+            background-color: #FFFFCC;
+            border: 1px solid #000000;
+            width: 20px;
+        }
+
+        .maintable .th2 {
+            background-color: #FFFFCC;
+            border: 1px solid #000000;
+            /*width: 90px;*/
+        }
+
+        .maintable .th3 {
+            background-color: #FFFFCC;
+            border: 1px solid #000000;
+            /*width: 120px;*/
+        }
+
+        .maintable .th4 {
+            background-color: #FFFFCC;
+            border: 1px solid #000000;
+        }
+
+        .maintable .th5 {
+            background-color: #FFFFCC;
+            border: 1px solid #000000;
+            width: 120px;
+        }
+
+        .maintable .td1 {
+            text-align: right;
+            width: 20px;
+        }
+
+        .maintable .td2 {
+            /*width: 90px;*/
+        }
+
+        .maintable .td3 {
+            /*width: 120px;*/
+        }
+
+        .maintable .td5 {
+            width: 120px;
+        }
+
+        .maxrows {
+            text-align: right;
+            padding: 0;
+            margin-bottom: 5px;
+            /*width: 680px;*/
+        }
+
+        .pageselecter {
+            color: #000000;
+            text-align: center;
+            padding: 0;
+            margin-top: 10px;
+            /*width: 680px;*/
+        }
+
+        .pageselecter .select {
+            color: #0000FF;
+            border: 1px solid #0000FF;
+        }
+
+        .pageselecter a {
+            color: #0000FF;
+        }
+
+        .rows {
+            float: left;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <noscript>
+        &lt;p&gt; JavaScriptが&lt;font color="#FF3333"&gt;無効&lt;/font&gt;になっています。&lt;br/&gt; 登録文書編集、新規文書登録、検索などを行う際はJavaScriptを有効にしてください。 &lt;/p&gt;
+    </noscript>
+    <form action="" method="post" enctype="multipart/form-data" onsubmit="sendData('search-field', 'search-word', 'search-orand', 'search-begin', 'search-finish');" name="fadvanced" id="form2">
+        <center>
+            <table class="layout" border="0">
+                <tbody>
+                    <tr>
+                        <td class="ltd"></td>
+                        <td class="h1td">
+                            <a href="editfiles.cgi" id="head-title"><h1 align="center">情報登録・検索システム</h1></a>
+                        </td>
+                        <td class="rtd"></td>
+                    </tr>
+                    <tr>
+                        <td class="ltd"></td>
+                        <td align="right">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td align="right">
+
+                                            <a href="login.cgi?prepage=">ログイン</a>
+
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </td>
+                        <td class="rtd"></td>
+                    </tr>
+                    <!-- add 2011/5/10 by vic -->
+                    <tr>
+                        <td class="ltd"></td>
+                        <td>
+                            <div id="btns">
+                                <ul>
+                                    <li><a href="editfiles.cgi" class="active">各種申請書・届出類情報</a></li>
+                                    <li><a href="filelist_iinet.cgi?page_num=10&amp;pg=0" class="">事故・故障情報</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- /add-->
+                    <tr>
+                        <td class="ltd"></td>
+                        <td>
+                            <div id="tabs">
+                                <ul>
+                                    <!-- add 2011/5/16 by vic -->
+                                    <li><a href="editfiles.cgi" class=" ltab">登録文書</a></li>
+
+                                    <li><a href="search.cgi" class="active tab">検索</a></li>
+
+                                    <!-- add 2011/5/16 by vic -->
+
+                                    <!-- /add-->
+                                </ul>
+                            </div>
+
+                            <script type="text/JavaScript">
+                              $(window).load(function(){
+                                $('#loading').fadeOut("fast").promise().done(function(){
+                                  $('#content').fadeIn(1000); $(this).remove();
+                                });
+                              });
+                            </script>
+                            <div id="content">
+                                <center>
+                                    <div>
+                                        <input type="button" id="trigger-former" class="trigger-former active" value="詳細検索">
+                                    </div>
+                                    <table class="search-table">
+                                        <thead class="easy" style="display: none;">
+                                            <tr>
+                                                <th>
+                                                    <table class="keyword-table" id="alsearch">
+                                                        <caption>■詳細検索 [<span class="help-tooltip tooltipstered">?</span>]</caption>
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="5">
+                                                                    <select name="all-fields" id="all-fields" style="display: none;">
+                                                                        <option value="Document_ID">登録ID</option>
+                                                                        <option value="DocumentNumber">文書番号</option>
+                                                                        <option value="Title">申請書の件名</option>
+                                                                        <option value="ProposalTitle">起案文書の件名</option>
+                                                                        <option value="ProposalSummary">案件概要</option>
+                                                                        <option value="ApplicationDate">申請日（届出日）</option>
+                                                                        <option value="ReceptionDate">受付日</option>
+                                                                        <option value="DraftingDate">起案日</option>
+                                                                        <option value="SettlementDate">決裁日</option>
+                                                                        <option value="EnforcementDate">施行日</option>
+                                                                        <option value="ApplicantName">申請者名称</option>
+                                                                        <option value="OrganizationName">代表者氏名</option>
+                                                                        <option value="FacilityName">施設名</option>
+                                                                        <option value="EstablishmentName">事業所</option>
+                                                                        <option value="RelatingNumber">関連文書番号</option>
+                                                                        <option value="DrafterName">担当者（起案者）</option>
+                                                                        <option value="PdfFile">PDFファイル</option>
+                                                                        <option value="PdfTexts">PDFテキスト</option>
+                                                                        <option value="Settlement">決裁状況</option>
+                                                                        <option value="Remark">備考（その他）</option>
+                                                                        <option value="Version">更新番号</option>
+                                                                        <option value="UpdatedAt">最終更新日時</option>
+                                                                        <option value="UpdatedBy">編集者</option>
+                                                                        <option value="Backup1">予備項目1</option>
+                                                                        <option value="*" selected="selected">全て</option>
+                                                                    </select>
+                                                                    <input type="text" name="all-item" id="all-items" placeholder="検索キーワードを入力してください" value="" style="width: 70%;">
+                                                                    <input name="all-or" id="all-or" value="or" type="radio" checked="">
+                                                                    <label for="all-or">OR</label>
+                                                                    <input name="all-or" id="all-and" value="and" type="radio">
+                                                                    <label for="all-and">AND</label>&nbsp;
+                                                                    <input type="submit" class="button" value="全件検索" name="keybtn">
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="advanced" style="display: table-row-group;">
+                                            <tr>
+                                                <td>
+                                                    <table class="keyword-table" id="keywords">
+                                                        <caption>■文書項目で絞り込み[<span class="help-tooltip tooltipstered">?</span>]</caption>
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="4">
+                                                                    <input type="button" name="addkeyword" value="検索キーワードを追加" onclick="add_row('keywords','fields','keyword');">
+                                                                    <input type="button" name="addscp" value="範囲検索を追加" onclick="add_row('keywords','range','range_begin','range_finish');">
+                                                                </th>
+                                                            </tr>
+                                                            <tr id="fields" style="display: block;">
+                                                                <td><span class="style1">1.</span></td>
+                                                                <td>
+                                                                    <select name="fields" id="field-1">
+                                                                        <option value="Document_ID">登録ID</option>
+                                                                        <option value="DocumentNumber">文書番号</option>
+                                                                        <option value="Title">申請書の件名</option>
+                                                                        <option value="ProposalTitle">起案文書の件名</option>
+                                                                        <option value="ProposalSummary">案件概要</option>
+                                                                        <option value="ApplicationDate">申請日（届出日）</option>
+                                                                        <option value="ReceptionDate">受付日</option>
+                                                                        <option value="DraftingDate">起案日</option>
+                                                                        <option value="SettlementDate">決裁日</option>
+                                                                        <option value="EnforcementDate">施行日</option>
+                                                                        <option value="ApplicantName">申請者名称</option>
+                                                                        <option value="OrganizationName">代表者氏名</option>
+                                                                        <option value="FacilityName">施設名</option>
+                                                                        <option value="EstablishmentName">事業所</option>
+                                                                        <option value="RelatingNumber">関連文書番号</option>
+                                                                        <option value="DrafterName">担当者（起案者）</option>
+                                                                        <option value="PdfFile">PDFファイル</option>
+                                                                        <option value="PdfTexts">PDFテキスト</option>
+                                                                        <option value="Settlement">決裁状況</option>
+                                                                        <option value="Remark">備考（その他）</option>
+                                                                        <option value="Version">更新番号</option>
+                                                                        <option value="UpdatedAt">最終更新日時</option>
+                                                                        <option value="UpdatedBy">編集者</option>
+                                                                        <option value="Backup1">予備項目1</option>
+                                                                        <option value="*">全て</option>
+                                                                    </select>
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" name="keyword" id="word-1" class="keyword" value="" placeholder="検索キーワードを入力してください">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="radio" name="sel-or-and-1" id="sel-or-1" value="or" checked="">
+                                                                    <label for="sel-or-1">OR</label>
+                                                                    <input type="radio" name="sel-or-and-1" id="sel-and-1" value="and">
+                                                                    <label for="sel-and-1">AND</label>
+                                                                </td>
+                                                                <td>
+                                                                    <input type="button" value="削除" onclick="del_row('keywords',1)">
+                                                                </td>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                              <td>
+                                                <table class="keyword-table" id="keywords">
+                                                  <caption>■施設で検索</caption>
+                                                  <tbody>
+                                                    <tr id="relate" style="display: block;">
+                                                      <td>
+                                                        <select style="display:none;" name="relate" id="relate-2">
+                                                            <option value="関連施設項目"  selected="true">関連施設項目</option>
+                                                        </select>
+                                                        <select class="single" multiple="multiple">
+                                                          <option value="HTTR(高温工学試験研究炉)">HTTR,高温工学試験研究炉</option>
+                                                          <option value="JMTR(材料試験炉)">JMTR,材料試験炉</option>
+                                                          <option value="JRR-1(原子炉施設)">JRR-1,原子炉施設</option>
+                                                          <option value="JRR-2(原子炉施設)">JRR-2,原子炉施設</option>
+                                                          <option value="JRR-3(原子炉施設)">JRR-3,原子炉施設</option>
+                                                          <option value="JRR-4(原子炉施設)">JRR-4,原子炉施設</option>
+                                                          <option value="FCA(高速臨界実験装置)">FCA,高速臨界実験装置</option>
+                                                          <option value="TCA(軽水臨界実験装置)">TCA,軽水臨界実験装置</option>
+                                                          <option value="SHE(半均質臨界実験装置)">SHE,半均質臨界実験装置</option>
+                                                          <option value="JPDR(試験研究用原子力発電所1)">JPDR,試験研究用原子力発電所1</option>
+                                                          <option value="むつ,原子力第1船,原子力第一船">むつ,原子力第1船,原子力第一船</option>
+                                                          <option value="高速実験炉,常陽,,重水臨界実験装置">常陽,高速実験炉,重水臨界実験装置</option>
+                                                        </select>
+                                                      </td>
+                                                    </tr>
+                                                  </tbody>
+                                                </table>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                                <td id="category_cb">
+                                                    <input name="DocmentCategry" type="hidden" value="">
+                                                    <input name="DocmentType" type="hidden" value="">
+                                                    <input name="field" id="search-field" type="hidden" value="">
+                                                    <input name="word" id="search-word" type="hidden" value="">
+                                                    <input name="orand" id="search-orand" type="hidden" value="">
+                                                    <input name="beginword" id="search-begin" type="hidden" value="">
+                                                    <input name="finishword" id="search-finish" type="hidden" value="">
+                                                    <input name="allfields" id="allfields" type="hidden" value="">
+                                                    <input name="allitems" id="allitems" type="hidden" value="">
+                                                    <input name="allorand" id="allorand" type="hidden" value="">
+                                                    <input name="display" id="display" type="hidden" value="">
+                                                    <table class="category-table">
+                                                        <caption>■検索対象文書種別の絞り込み[<span class="help-tooltip tooltipstered">?</span>]<span style="float:right;"><input name="one-for-all" id="checkd_all" type="button" value="全選択/全解除">&nbsp;[<span class="help-tooltip tooltipstered">?</span>]</span>
+                                                        </caption>
+                                                        <tbody id="categories">
+                                                            <tr>
+                                                                <th rowspan="3">
+                                                                    <input name="DocmentCategry" type="checkbox" class="Doccheck" id="DocmentCategryA" value="A" checked="checked" onclick="check_all('DocmentCategryA','DocmentTypeA');">
+                                                                    <label for="DocmentCategryA">&nbsp;原子炉</label>
+                                                                </th>
+                                                                <td>
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeA01" value="A01" checked="checked" onclick="check_child('DocmentCategryA','DocmentTypeA','DocmentTypeA01');">
+                                                                    <label for="DocmentTypeA01">設置許可</label>
+                                                                </td>
+                                                                <td>
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeA02" value="A02" checked="checked" onclick="check_child('DocmentCategryA','DocmentTypeA','DocmentTypeA02');">
+                                                                    <label for="DocmentTypeA02">設計及び工事の方法の認可</label>
+                                                                </td>
+                                                                <td>
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeA03" value="A03" checked="checked" onclick="check_child('DocmentCategryA','DocmentTypeA','DocmentTypeA03');">
+                                                                    <label for="DocmentTypeA03">使用前検査</label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeA04" value="A04" checked="checked" onclick="check_child('DocmentCategryA','DocmentTypeA','DocmentTypeA04');">
+                                                                    <label for="DocmentTypeA04">保安規定の認可</label>
+                                                                </td>
+                                                                <td>
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeA05" value="A05" checked="checked" onclick="check_child('DocmentCategryA','DocmentTypeA','DocmentTypeA05');">
+                                                                    <label for="DocmentTypeA05">施設定期検査</label>
+                                                                </td>
+                                                                <td>
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeA06" value="A06" checked="checked" onclick="check_child('DocmentCategryA','DocmentTypeA','DocmentTypeA06');">
+                                                                    <label for="DocmentTypeA06">廃止措置計画の認可</label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeA07" value="A07" checked="checked" onclick="check_child('DocmentCategryA','DocmentTypeA','DocmentTypeA07');">
+                                                                    <label for="DocmentTypeA07">廃止措置終了の確認</label>
+                                                                </td>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeA99" value="A99" checked="checked" onclick="check_child('DocmentCategryA','DocmentTypeA','DocmentTypeA99');">
+                                                                    <label for="DocmentTypeA99">その他</label>
+                                                                </td>
+                                                                <td class="bline">&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th rowspan="2">
+                                                                    <input name="DocmentCategry" type="checkbox" class="Doccheck" id="DocmentCategryB" value="B" checked="checked" onclick="check_all('DocmentCategryB','DocmentTypeB');">
+                                                                    <label for="DocmentCategryB">&nbsp;使用</label>
+                                                                </th>
+                                                                <td>
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeB01" value="B01" checked="checked" onclick="check_child('DocmentCategryB','DocmentTypeB','DocmentTypeB01');">
+                                                                    <label for="DocmentTypeB01">核燃料物質の許可</label>
+                                                                </td>
+                                                                <td>
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeB02" value="B02" checked="checked" onclick="check_child('DocmentCategryB','DocmentTypeB','DocmentTypeB02');">
+                                                                    <label for="DocmentTypeB02">施設検査</label>
+                                                                </td>
+                                                                <td>
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeB03" value="B03" checked="checked" onclick="check_child('DocmentCategryB','DocmentTypeB','DocmentTypeB03');">
+                                                                    <label for="DocmentTypeB03">保安規定の認可</label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeB04" value="B04" checked="checked" onclick="check_child('DocmentCategryB','DocmentTypeB','DocmentTypeB04');">
+                                                                    <label for="DocmentTypeB04">廃止措置計画の認可</label>
+                                                                </td>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeB05" value="B05" checked="checked" onclick="check_child('DocmentCategryB','DocmentTypeB','DocmentTypeB05');">
+                                                                    <label for="DocmentTypeB05">廃止措置終了の確認</label>
+                                                                </td>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeB06" value="B06" checked="checked" onclick="check_child('DocmentCategryB','DocmentTypeB','DocmentTypeB06');">
+                                                                    <label for="DocmentTypeB06">核原料物質の使用の届出</label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th rowspan="1">
+                                                                    <input name="DocmentCategry" type="checkbox" class="Doccheck" id="DocmentCategryC" value="C" checked="checked" onclick="check_all('DocmentCategryC','DocmentTypeC');">
+                                                                    <label for="DocmentCategryC">&nbsp;輸送</label>
+                                                                </th>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeC01" value="C01" checked="checked" onclick="check_child('DocmentCategryC','DocmentTypeC','DocmentTypeC01');">
+                                                                    <label for="DocmentTypeC01">運搬確認</label>
+                                                                </td>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeC02" value="C02" checked="checked" onclick="check_child('DocmentCategryC','DocmentTypeC','DocmentTypeC02');">
+                                                                    <label for="DocmentTypeC02">容器確認</label>
+                                                                </td>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeC03" value="C03" checked="checked" onclick="check_child('DocmentCategryC','DocmentTypeC','DocmentTypeC03');">
+                                                                    <label for="DocmentTypeC03">核燃料輸送物設計承認</label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th rowspan="1">
+                                                                    <input name="DocmentCategry" type="checkbox" class="Doccheck" id="DocmentCategryD" value="D" checked="checked" onclick="check_all('DocmentCategryD','DocmentTypeD');">
+                                                                    <label for="DocmentCategryD">&nbsp;ＰＰ</label>
+                                                                </th>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeD01" value="D01" checked="checked" onclick="check_child('DocmentCategryD','DocmentTypeD','DocmentTypeD01');">
+                                                                    <label for="DocmentTypeD01">核物質防護管理者</label>
+                                                                </td>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeD02" value="D02" checked="checked" onclick="check_child('DocmentCategryD','DocmentTypeD','DocmentTypeD02');">
+                                                                    <label for="DocmentTypeD02">核物質防護規定</label>
+                                                                </td>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeD03" value="D03" checked="checked" onclick="check_child('DocmentCategryD','DocmentTypeD','DocmentTypeD03');">
+                                                                    <label for="DocmentTypeD03">取決め</label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th rowspan="1">
+                                                                    <input name="DocmentCategry" type="checkbox" class="Doccheck" id="DocmentCategryE" value="E" checked="checked" onclick="check_all('DocmentCategryE','DocmentTypeE');">
+                                                                    <label for="DocmentCategryE">&nbsp;溶接</label>
+                                                                </th>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeE99" value="E99" checked="checked" onclick="check_child('DocmentCategryE','DocmentTypeE','DocmentTypeE99');">
+                                                                    <label for="DocmentTypeE99">溶接</label>
+                                                                </td>
+                                                                <td class="bline">&nbsp;</td>
+                                                                <td class="bline">&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th rowspan="1">
+                                                                    <input name="DocmentCategry" type="checkbox" class="Doccheck" id="DocmentCategryX" value="X" checked="checked" onclick="check_all('DocmentCategryX','DocmentTypeX');">
+                                                                    <label for="DocmentCategryX">&nbsp;その他</label>
+                                                                </th>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeX99" value="X99" checked="checked" onclick="check_child('DocmentCategryX','DocmentTypeX','DocmentTypeX99');">
+                                                                    <label for="DocmentTypeX99">その他</label>
+                                                                </td>
+                                                                <td class="bline">&nbsp;</td>
+                                                                <td class="bline">&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th rowspan="1">
+                                                                    <input name="DocmentCategry" type="checkbox" class="Doccheck" id="DocmentCategryF" value="F" checked="checked" onclick="check_all('DocmentCategryF','DocmentTypeF');">
+                                                                    <label for="DocmentCategryF">&nbsp;加工施設</label>
+                                                                </th>
+                                                                <td class="bline">
+                                                                    <input name="DocmentType" type="checkbox" class="Doccheck" id="DocmentTypeF01" value="F01" checked="checked" onclick="check_child('DocmentCategryF','DocmentTypeF','DocmentTypeF01');">
+                                                                    <label for="DocmentTypeF01">加工施設</label>
+                                                                </td>
+                                                                <td class="bline">&nbsp;</td>
+                                                                <td class="bline">&nbsp;</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="search-button">
+                                                    <input type="submit" class="button submit-advanced" value="検索" name="keybtn">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </center>
+                                <br>
+                                <br>
+                                <table>
+
+                                </table>
+                            </div>
+
+                            <script type="text/javascript">
+                              $(document).ready(function(){
+                                //select2化
+                                var op = $('.single').children();
+                                var arrsz = [];
+                                var sz;
+                                for( var i=0; i<op.length; i++ ){
+                                  arrsz.push(op.eq(i).text().length);
+                                }
+                                sz = (Math.max.apply(null, arrsz) + 13 + "em");
+                                $('.single').select2({
+                                  tags:true,
+                                  placeholder: "関連施設を選択",
+                                  allowClear: true,
+                                  width: sz,
+                                  language: "es"
+                                });
+                              });
+                            </script>
+                            <script type="text/javascript">
+                                <!--
+                                function check_all(parent_box, children_group) {
+
+                                    var v = document.getElementById(parent_box).checked;
+                                    fname = document.getElementById("form2").name;
+                                    //var check_box = children_box.split(",");
+                                    if (fname == "fadvanced") {
+                                        n = document.fadvanced.elements.length;
+
+                                        for (var i = 0; i < n; i++) {
+                                            var c = document.fadvanced.elements[i];
+                                            if (c.type == "checkbox") {
+                                                if (c.id.indexOf(children_group) == 0) {
+                                                    c.checked = v;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    //子チェックボックスがTrueの時は、全子チェックボックスを調べる
+                                    /*
+                                       for (var i=0; i<check_box.length; i++){
+                                       document.getElementById(check_box[i]).checked = v;
+                                       }
+                                       */
+                                }
+
+                                function check_child(parent_box, children_group, child_box) {
+
+                                    var v = document.getElementById(child_box).checked;
+
+                                    if (v) {
+                                        //子チェックボックスがTrueの時は、全子チェックボックスを調べる
+                                        for (var i = 0; i < document.form1.elements.length; i++) {
+                                            var c = document.form1.elements[i];
+                                            if (c.type == "checkbox") {
+                                                if (c.id.indexOf(children_group) == 0) {
+                                                    v &= c.checked;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    document.getElementById(parent_box).checked = v;
+
+                                }
+
+                                function count_range_field() {
+                                    var n = 1;
+                                    while (1) {
+                                        // 存在しないElementを探す（+ 安全策）
+                                        if (document.getElementById("field-" + n) == null && document.getElementById("range_" + n) == null || n > 1000) {
+                                            break;
+                                        }
+                                        n = n + 1;
+                                    }
+                                    return n;
+                                }
+
+                                ///<summary>検索条件の追加</summary>
+                                ///<param key="table_id">検索条件テーブルのID</param>
+                                ///<param key="selectbox_id">追加フィールドリストコントロールのID</param>
+                                ///<param key="inputbox_id">追加キーワード入力コントロールのID</param>
+                                ///<remarks>検索条件をテーブルに追加する</remarks>
+                                function add_row(table_id, selectbox_id, inputbox_id, range) {
+
+                                    //追加対象のテーブル
+                                    var tbl = document.getElementById(table_id);
+                                    //テーブルの行数を取得
+                                    var rmax = tbl.rows.length;
+
+                                    //セルの追加
+                                    //rmax;
+                                    var n = count_range_field();
+
+                                    var rnew = tbl.insertRow(rmax);
+                                    rnew.id = selectbox_id;
+                                    rnew.style = 'display:block;'
+                                        //var r = rmax + 1;
+
+                                    //1つ目のセル
+                                    var cnew = rnew.insertCell(0);
+                                    cnew.innerHTML = "<td><span class=\"style1\">" + rmax + ".</span>";
+
+                                    if(selectbox_id.match(/fields/)){
+                                      //2つ目のセル Select Field
+                                      cnew = rnew.insertCell(1);
+                                      cnew.innerHTML = "<select name=\"fields\" id=\"field-" + n + "\">" + "</select>";
+
+                                      //3つ目のセル Text Field
+                                      cnew = rnew.insertCell(2);
+                                      cnew.innerHTML  = "<input type=\"text\" name=\"keyword\" id=\"word-" + n + "\" class=\"keyword\" value=\"\"  placeholder=\"検索キーワードを入力してください\" />";
+
+                                      //4つ目のセル OR/AND radio button
+                                      cnew = rnew.insertCell(3);
+                                      cnew.innerHTML  =
+                                        "<input type=\"radio\" name=\"sel-or-and-" + n + "\" id=\"sel-or-" + n + "\" value=\"or\" checked/>" +
+                                        "<label for=\"sel-or-"+ n + "\">OR</label>" +
+                                        "<input type=\"radio\" name=\"sel-or-and-" + n + "\" id=\"sel-and-" + n + "\" value=\"and\"/>" +
+                                        "<label for=\"sel-and-"+ n + "\">AND</label>";
+                                      setFieldOptions("field-" + n);
+                                    } else
+                                    if (selectbox_id.match(/range/)) {
+                                        //2つ目のセル - Scope Select Field
+                                        cnew = rnew.insertCell(1);
+                                        cnew.innerHTML = "<select class=\"range-field\" name=\"range\" id=\"range_" + n + "\">" + "</select>";
+
+                                        //3つ目のセル - Scope Text Field
+                                        cnew = rnew.insertCell(2);
+                                        cnew.innerHTML = "開始: <input type=\"text\" name=\"range_" + n + "_begin\" id=\"range_" + n + "_begin\" value=\"\" style=\"width:7.7em;\"/>" + "&nbsp;~&nbsp;" +
+                                            "終了: <input type=\"text\" name=\"range_" + n + "_finish\" id=\"range_" + n + "_finish\" value=\"\" style=\"width:8em;\"/>";
+
+
+                                        cnew = rnew.insertCell(3);
+                                        cnew.innerHTML = "<pre style=\"width:89px;\"></pre>";
+
+                                        setSCPFieldOptions("range_" + n);
+                                    }
+
+                                    //5つ目のセル Delete Button
+                                    cnew4 = rnew.insertCell(4);
+                                    cnew4.innerHTML = "<input type=\"button\" value=\"削除\" onclick=\"del_row('" + table_id + "'," + rmax + ")\" />";
+                                }
+
+                                function del_row(table_id, row_no) {
+
+                                    var tbl = document.getElementById(table_id);
+
+                                    tbl.deleteRow(row_no);
+
+                                    //1行目はヘッダなので、省略
+                                    for (r = 1; r < tbl.rows.length; r++) {
+                                        var n = r + 1;
+                                        tbl.rows[r].cells[0].innerHTML = "<span class=\"style1\">" + r + ".</span>";
+                                        tbl.rows[r].cells[4].innerHTML = "<input type=\"button\" value=\"削除\" onclick=\"del_row('" + table_id + "'," + r + ")\" />";
+                                    }
+
+                                }
+
+                                function setFieldOptions(id) { //, val){
+
+                                    var s = "";
+
+                                    //フィールドリスト
+                                    var list = document.getElementById(id);
+                                    var opt = list.options;
+                                    //リスト項目のクリア
+                                    opt.length = 0;
+
+                                    opt[opt.length] = new Option("登録ID", "Document_ID");
+                                    opt[opt.length] = new Option("文書番号", "DocumentNumber");
+                                    opt[opt.length] = new Option("申請書の件名", "Title");
+                                    opt[opt.length] = new Option("起案文書の件名", "ProposalTitle");
+                                    opt[opt.length] = new Option("案件概要", "ProposalSummary");
+                                    opt[opt.length] = new Option("申請日（届出日）", "ApplicationDate");
+                                    opt[opt.length] = new Option("受付日", "ReceptionDate");
+                                    opt[opt.length] = new Option("起案日", "DraftingDate");
+                                    opt[opt.length] = new Option("決裁日", "SettlementDate");
+                                    opt[opt.length] = new Option("施行日", "EnforcementDate");
+                                    opt[opt.length] = new Option("申請者名称", "ApplicantName");
+                                    opt[opt.length] = new Option("代表者氏名", "OrganizationName");
+                                    opt[opt.length] = new Option("施設名", "FacilityName");
+                                    opt[opt.length] = new Option("事業所", "EstablishmentName");
+                                    opt[opt.length] = new Option("関連文書番号", "RelatingNumber");
+                                    opt[opt.length] = new Option("担当者（起案者）", "DrafterName");
+                                    opt[opt.length] = new Option("PDFファイル", "PdfFile");
+                                    opt[opt.length] = new Option("PDFテキスト", "PdfTexts");
+                                    opt[opt.length] = new Option("決裁状況", "Settlement");
+                                    opt[opt.length] = new Option("備考（その他）", "Remark");
+                                    opt[opt.length] = new Option("更新番号", "Version");
+                                    opt[opt.length] = new Option("最終更新日時", "UpdatedAt");
+                                    opt[opt.length] = new Option("編集者", "UpdatedBy");
+                                    opt[opt.length] = new Option("予備項目1", "Backup1");
+                                    opt[opt.length] = new Option("全て", "*");
+
+
+                                    //list.value = val;
+
+                                }
+
+                                function setSCPFieldOptions(id) { //, val){
+
+                                    var s = "";
+
+                                    //フィールドリスト
+                                    var list = document.getElementById(id);
+                                    var opt = list.options;
+                                    //リスト項目のクリア
+                                    opt.length = 0;
+
+                                    opt[opt.length] = new Option("登録ID(上4桁)", "Document_ID1");
+                                    opt[opt.length] = new Option("登録ID(下6桁)", "Document_ID2");
+                                    opt[opt.length] = new Option("文書番号", "DocumentNumber");
+                                    opt[opt.length] = new Option("申請日（届出日）", "ApplicationDate");
+                                    opt[opt.length] = new Option("受付日", "ReceptionDate");
+                                    opt[opt.length] = new Option("起案日", "DraftingDate");
+                                    opt[opt.length] = new Option("決裁日", "SettlementDate");
+                                    opt[opt.length] = new Option("施行日", "EnforcementDate");
+
+                                }
+
+                                ///<summary>送信データを作成</summary>
+                                ///<param key="table_id">検索条件テーブルのID</param>
+                                ///<param key="fieldbox_id">追加フィールドリストコントロールのID</param>
+                                ///<param key="input_box">追加キーワード入力コントロールのID</param>
+                                ///<remarks>検索条件をテーブルに追加する</remarks>
+                                //function sendData(table_id, fieldbox_id, wordbox_id) {
+
+                                function sendData(fieldbox_id, keywordbox_id, orand_id, scpword_id, finword_id) {
+
+                                    var f = "";
+                                    var w = "";
+                                    var o = "";
+
+                                    var sc = "";
+                                    var be = "";
+                                    var fi = "";
+
+                                    // tableのヘッダ部分を-1する。
+                                    var n = keywords.rows.length - 1;
+                                    form_name();
+
+                                    //1行目はヘッダなので省略
+                                    var i = 1;
+                                    while (1) {
+
+                                        //console.log(document.getElementById("range_" + i))
+                                        if (document.getElementById("field-" + i) != null) {
+
+                                            //文字列を作成
+                                            //改ページコードは区切り文字として使用
+                                            f += "\f" + document.getElementById("field-" + i).value;
+                                            w += "\f" + document.getElementById("word-" + i).value;
+                                            o += "\f" + document.getElementById("sel-or-" + i).checked;
+
+                                            //検索用隠しボックスに余分な改ページを削除し代入
+                                            document.getElementById(fieldbox_id).value = f.substr(1);
+                                            document.getElementById(keywordbox_id).value = w.substr(1);
+                                            document.getElementById(orand_id).value = o.substr(1);
+
+                                        } else
+                                        if (document.getElementById("range_" + i) != null) {
+
+                                            //文字列を作成
+                                            //改ページコードは区切り文字として使用
+                                            sc += "\f" + document.getElementById("range_" + i).value;
+                                            be += "\f" + document.getElementById("range_" + i + "_begin").value;
+                                            fi += "\f" + document.getElementById("range_" + i + "_finish").value;
+
+                                            //検索用隠しボックスに余分な改ページを削除し代入
+                                            document.getElementById(fieldbox_id).value = sc.substr(1);
+                                            document.getElementById(scpword_id).value = be.substr(1);
+                                            document.getElementById(finword_id).value = fi.substr(1);
+                                        }
+                                        i = i + 1;
+                                        //安全策
+                                        if (i > n) {
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                function form_name() {
+
+                                    var wi = "";
+                                    wi = document.getElementById("form2");
+                                    formname = wi.name;
+                                    document.getElementById("display").value = formname;
+                                }
+
+                                function AllSendData(all_field_id, all_item_id, all_orand) {
+                                    //1行目はヘッダなので省略
+
+                                    var allitem = "";
+                                    var allfield = "";
+                                    var allorand = "";
+                                    //var numofloop= test();
+
+                                    // 入力されたキーワードの数だけループする
+                                    var items = "\f" + document.getElementById("all-items").value;
+                                    var n = jQuery.trim(items.substr(1)).split(/\s/).length;
+                                    var i = 1;
+                                    while (1) {
+                                        if (document.getElementById("all-fields") != null) {
+                                            //文字列を作成
+                                            //改ページコードは区切り文字として使用
+                                            allfield += "\f" + document.getElementById("all-fields").value;
+                                            allitem += "\f" + document.getElementById("all-items").value;
+                                            allorand += "\f" + document.getElementById("all-or").checked;
+
+                                            //検索用隠しボックスに余分な改ページを削除し代入
+                                            document.getElementById(all_field_id).value = allfield.substr(1);
+                                            document.getElementById(all_item_id).value = allitem.substr(1);
+                                            document.getElementById(all_orand).value = allorand.substr(1);
+                                        }
+                                        i = i + 1;
+                                        //安全策
+                                        if (i > n) {
+                                            break;
+                                        }
+
+                                    }
+                                }
+
+
+
+                                //-->
+                            </script>
+                            <script type="text/JavaScript">
+                                <!--
+$(document).ready(function(){
+
+  easy     = $(".easy");
+  advanced = $(".advanced");
+
+
+  // どちらで検索を行ったか判定し、再描写する
+  if (advanced.hasClass("active")){
+    $(".trigger-former").toggleClass('active');
+    $(".trigger-former").attr("value", "詳細検索");
+    $("#form2").attr("onsubmit", "sendData('search-field', 'search-word', 'search-orand', 'search-begin', 'search-finish');");
+    $("#form2").attr("name", "fadvanced");
+  }else{
+    $(".trigger-former").attr("value", "簡単検索");
+    advanced.removeClass("active");
+    $("#form2").attr("onsubmit", "AllSendData('allfields', 'allitems', 'allorand')");
+    $("#form2").attr("name", "feasy");
+  }
+
+  // 簡易検索、詳細検索の切り替えとform切り替えの制御
+  $(".trigger-former").on("click",function(){
+    $(this).toggleClass('active');
+
+    if ($(this).hasClass("active")){
+      easy.fadeToggle('slow').promise().done(function () {
+        advanced.fadeToggle('slow',"linear")
+        $(".trigger-former").attr("value", "詳細検索");
+      });
+      $("#form2").attr("onsubmit", "sendData('search-field', 'search-word', 'search-orand', 'search-begin', 'search-finish');");
+      $("#form2").attr("name", "fadvanced");
+    }else{
+      advanced.fadeToggle('slow').promise().done(function () {
+        easy.fadeToggle('slow',"linear")
+        $(".trigger-former").attr("value", "簡易検索");
+      });
+      $("#form2").attr("onsubmit", "AllSendData('allfields', 'allitems', 'allorand');");
+      $("#form2").attr("name", "feasy");
+    }
+  });
+
+  // 検索対象種別の全選択/解除ボタンの制御
+  $('#checkd_all').click(function() {
+    var numofchecked = $('#categories :checked').length;
+    if (numofchecked == 30) {
+      $('#categories :checked').prop('checked', false);
+    }else{
+      $('input[class=Doccheck]').prop('checked', true);
+    }
+  });
+
+});
+-->
+                            </script>
+                            <script type="text/JavaScript">
+                                <!--
+// ウィンドウをロードしたとき
+window.onload = function(){
+  var selector = document.getElementById("sort_with").value;
+  var sortbtn = document.getElementById("exec_sort");
+  var asc = document.getElementById("sort_order_asc");
+  var desc = document.getElementById("sort_order_desc");
+
+    if(selector != "null"){
+      //並び替え選択フィールドがデフォルトならdisabled
+      asc.disabled = false;
+      desc.disabled = false;
+      sortbtn.disabled = false;
+    }else{
+      //並び替え選択フィールドがデフォルト以外ならenabled
+      asc.disabled = true;
+      desc.disabled = true;
+      sortbtn.disabled = true;
+    }
+};
+// onChangeイベント
+function disablebtnChange(sortwith, execsort, soa, sod){
+  var selector = document.getElementById(sortwith).value;
+  var sortbtn = document.getElementById(execsort);
+  var asc = document.getElementById(soa);
+  var desc = document.getElementById(sod);
+
+    if(selector != "null"){
+      //並び替え選択フィールドがデフォルトならdisabled
+      asc.disabled = false;
+      desc.disabled = false;
+      sortbtn.disabled = false;
+    }else{
+      //並び替え選択フィールドがデフォルト以外ならenabled
+      asc.disabled = true;
+      desc.disabled = true;
+      sortbtn.disabled = true;
+    }
+};
+</script>
+                        </td>
+                        <!--中央セル-->
+                        <td class="rtd"></td>
+                        <!--右スペース-->
+                    </tr>
+                    <!--メイン行-->
+
+                </tbody>
+            </table>
+            <!--layout table-->
+            <!--エラーメッセージ-->
+        </center>
+    </form>
+</body>
