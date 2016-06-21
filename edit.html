@@ -1,0 +1,242 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>情報登録・検索システム&nbsp;-&nbsp;ユーザー管理</title>
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+    <link rel="stylesheet" href="base-design.css" type="text/css">
+    <link rel="stylesheet" href="tab-design.css" type="text/css">
+    <link rel="stylesheet" href="btn-design.css" type="text/css">
+    <script type="text/javascript">
+      $(function(){
+        $("#ach,#rach").on('change',function(){
+          $("input[name=ch]").prop("checked",this.checked)
+        });
+        $(".search").click(function(){
+          $("#unrelation").fadeToggle("slow")
+        });
+        $(".research").click(function(){
+          $("#relation").fadeToggle("slow")
+        });
+        $(".unlock").click(function(){
+          $(".none").fadeToggle("slow")
+        });
+      });
+    </script>
+    <style type="text/css">
+    .table>tbody>tr>td,
+    .table>tbody>tr>th,
+    .table>tfoot>tr>td,
+    .table>tfoot>tr>th,
+    .table>thead>tr>td,
+    .table>thead>tr>th {
+      vertical-align: middle;
+    }
+    .maintable th{
+      vertical-align: top;
+      width: 120px;
+      padding: 8px;
+    }
+    .maintable td {
+      vertical-align: top;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      padding-left: 8px;
+    }
+    .maintable td textarea{
+      width: 38em;
+      font-size: small;
+    }
+    .maintable td p{
+      padding: 0px;
+      margin:0px;
+      font-family: "ＭＳ ゴシック", "Osaka－等幅";
+    }
+    .search-button {
+      margin-top: 8px;
+    }
+    .style2 {
+      font-size: medium;
+      color: #FF0000;
+    }
+    .variableTable {
+      border:thin solid #0099FF;
+      border-collapse:collapse;
+      margin-top: 0.5em;
+    }
+    .variableTable td{
+      border:1px solid #000000;
+      padding: 0.5em;
+      text-align:center;
+      vertical-align: middle;
+    }
+    .variableTable .text-box{
+      width: 360px;
+    }
+    .variableTable .select-file{
+      width: 365px;
+    }
+    .variableTableValRow select{
+      width: 22em;
+    }
+    .uploadTable {
+      border:thin solid #0099FF;
+      border-collapse:collapse;
+      margin-top: 0.5em;
+    }
+    .uploadTable td{
+      padding: 0.5em;
+    }
+    .uploadTable .col0{
+      text-align:right;
+      vertical-align: middle;
+    }
+    .uploadTable .text-box{
+      width: 360px;
+    }
+    .uploadTable .select-file{
+      width: 420px;
+    }
+    </style>
+  </head>
+  <body>
+    <noscript>&lt;p&gt; JavaScriptが&lt;font color="#FF3333"&gt;無効&lt;/font&gt;になっています。&lt;br /&gt; 登録文書編集、新規文書登録、検索などを行う際はJavaScriptを有効にしてください。 &lt;/p&gt; </noscript>
+    <div class="container-fluid">
+      <div class="row">
+        <table class="layout" border="0">
+          <tbody>
+            <tr>
+              <td class="ltd"></td>
+              <td class="h1td">
+                <h1 align="center">情報登録・検索システム</h1>
+              </td>
+              <td class="rtd"></td>
+            </tr>
+            <tr>
+              <td class="ltd"></td>
+              <td align="right">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td align="right">
+                        <a href="show_user.cgi?id=1">admin</a>さんがログインしています。
+                        <a href="logout.cgi">ログアウト</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right">
+                        <a href="editfiles.cgi">データ管理</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+              <td class="rtd"></td>
+            </tr>
+            <tr>
+              <td class="ltd"></td>
+              <td>
+                <div id="tabs">
+                  <ul>
+                    <li> <a href="#" class="ltab">ユーザー管理</a> </li>
+                    <li> <a href="#" class="tab">ファイル保存設定</a> </li>
+                    <li> <a href="#" class="tab">バックアップ</a> </li>
+                    <li> <a href="#" class=" tab">関連施設登録</a> </li>
+                    <li> <a href="#" class="active tab">施設マスターテーブルの管理</a> </li>
+                  </ul>
+                </div>
+                <div id="content">
+                  <h5><a href="test4.html">施設マスターテーブルの一覧</a> <span><</span> <a href="test5.html">関連施設の詳細</a><span><</span> 関連施設の編集</h5>
+                  <br><br>
+                  <table class="table table-bordered">
+                    <tr>
+                      <th>施設名</th>
+                      <td>
+                        <div class="btn btn-default"><strong>施設名追加</strong></div>
+                        <br><br>
+                        <table class="table table-bordered">
+                          <tbody>
+                            <tr>
+                              <td> 1. </td>
+                              <td > <input type="text" name="name" value="むつ"></td>
+                              <td ><input type="button" name="name" value="削除 " class="btn btn-danger"></td>
+                            </tr>
+                            <tr>
+                              <td> 2. </td>
+                              <td> <input type="text" name="name" value="原子力第1船"></td>
+                              <td ><input type="button" name="name" value="削除 " class="btn btn-danger"></td>
+                            </tr>
+                            <tr>
+                              <td> 3. </td>
+                              <td> <input type="text" name="name" value="原子力第一船"> </td>
+                              <td ><input type="button" name="name" value="削除 " class="btn btn-danger"/></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>関連キーワード</th>
+                      <td>
+                        <div class="btn btn-default"><strong>関連キーワードを追加</strong></div>
+                        <br><br>
+                        <table class="table table-bordered">
+                          <tbody>
+                            <tr>
+                              <td> 1. </td>
+                              <td > <input type="text" name="name" value="むつ"></td>
+                              <td ><input type="button" name="name" value="削除 " class="btn btn-danger"></td>
+                            </tr>
+                            <tr>
+                              <td> 2. </td>
+                              <td> <input type="text" name="name" value="原子力第1船"></td>
+                              <td ><input type="button" name="name" value="削除 " class="btn btn-danger"></td>
+                            </tr>
+                            <tr>
+                              <td> 3. </td>
+                              <td> <input type="text" name="name" value="原子力第一船"> </td>
+                              <td ><input type="button" name="name" value="削除 " class="btn btn-danger"/></td>
+                            </tr>
+                            <tr>
+                              <td> 4. </td>
+                              <td> <input type="text" name="name" value="原子力船"> </td>
+                              <td ><input type="button" name="name" value="削除 " class="btn btn-danger"/></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                    <tr>
+                       <th>除外キーワード</th>
+                       <td><div class="btn btn-default"><strong>除外キーワードを追加</strong></div> </td>
+                    </tr>
+                    <tr>
+                       <th>リスト表示名</th>
+                       <br><br>
+                       <td > <input size="50%" type="text" name="name" value="むつ,原子力第1船,原子力第一船"></td>
+                    </tr>
+                  </table>
+                  <center>
+                    <div class="btn btn-warning">更新</div>
+                    <div class="btn btn-default"><a href="test5.html">戻る</a></div>
+                  </center>
+                </div>
+              </td>
+              <!--中央セル-->
+              <td class="rtd"></td>
+              <!--右スペース-->
+            </tr>
+            <!--メイン行-->
+          </tbody>
+        </table>
+        <!--layout table-->
+      </div>
+    </div>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+  </body>
+</html>
